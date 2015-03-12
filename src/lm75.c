@@ -22,6 +22,8 @@
 #include <math.h>
 #endif
 
+#define LM75_REG_TMP 0x00
+
 typedef struct {
 	/* file descriptor */
 	int file;
@@ -152,6 +154,14 @@ void lm75_close(void *_s) {
  * @return temperature
  */
 float lm75_temperature(void *_s) {
-	// TODO
+	lm75_t *lm = TO_S(_s);
+	uint16_t data = (uint16_t) i2c_smbus_read_word_data(lm->file, LM75_REG_TMP);
+	uint8_t msb, lsb;
+	msb = data & 0x00FF;
+	lsb = (data & 0xFF00) >> 8;
+	
+	DEBUG("msb: %#x\n",msb);
+	DEBUG("lsb: %#x\n",lsb);
+	
 	return 0.0;
 }
