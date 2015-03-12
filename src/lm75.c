@@ -157,11 +157,25 @@ float lm75_temperature(void *_s) {
 	lm75_t *lm = TO_S(_s);
 	uint16_t data = (uint16_t) i2c_smbus_read_word_data(lm->file, LM75_REG_TMP);
 	uint8_t msb, lsb;
-	msb = data & 0x00FF;
-	lsb = (data & 0xFF00) >> 8;
+	msb = data & 0x00FF; // extract msb byte
+	lsb = (data & 0xFF00) >> 8; // extract lsb byte
 	
-	DEBUG("msb: %#x\n",msb);
-	DEBUG("lsb: %#x\n",lsb);
+	// We can use int8_t data type because
+	// the msb byte is encoded as two’s complement byte.
+	int8_t temperature0 = (int8_t) msb;
 	
-	return 0.0;
+	// We extract the first bit and right shift 7 seven bit positions.
+	// Why? Because we don't care about the bits 6,5,4,3,2,1 and 0.
+	int8_t temperature1 = (lsb & 0x80) >> 7; // is either zero or one
+	
+	// compute temperature
+	float temperature = temperature0 + 0.5 * temperature1;
+	
+	DEBUG("msb: %#x\n", msb);
+	DEBUG("lsb: %#x\n", lsb);
+	DEBUG("temperature0: %#x, %i\n", temperature0, temperature0);
+	DEBUG("temperature1: %#x, %i\n", temperature1, temperature1);
+	DEBUG("temperature: %0.2f\n", temperature);
+	
+	return temperature;
 }
