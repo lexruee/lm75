@@ -6,24 +6,30 @@
  *  
  */
 
+
 #ifndef __LM75__
 #define __LM75__
 #include <stdint.h>
 #include "lm75.h"
 #include <string.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
 #include <stdio.h>
 #include <linux/i2c-dev.h>
 #include <time.h>
 #include <math.h>
 #endif
 
+/*
+ * lm75 registers.
+ */
 #define LM75_REG_TMP 0x00
 
+
+/*
+ * lm75 structure.
+ */
 typedef struct {
 	/* file descriptor */
 	int file;
@@ -39,7 +45,7 @@ typedef struct {
 
 #define TO_S(x)	(lm75_t*) x
 
-#define __LM75__DEBUG__
+//#define __LM75__DEBUG__
 #ifdef __LM75__DEBUG__				
 #define DEBUG(...)	printf(__VA_ARGS__)
 #else
