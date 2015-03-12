@@ -1,6 +1,6 @@
 import time
 from tentacle_pi.LM75 import LM75
-lm = LM75(0x48,"/dev/i2c-2")
+lm = LM75(0x48,"/dev/i2c-1")
 
 for x in range(0,10):
         temperature = lm.temperature()

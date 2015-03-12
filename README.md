@@ -13,7 +13,7 @@ Raspberry Pi C driver for the sensor LM75.
 #include <stdio.h>
 
 int main(int argc, char **argv){
-	char *i2c_device = "/dev/i2c-2";
+	char *i2c_device = "/dev/i2c-1";
 	int address = 0x48;
 	
 	void *lm = lm75_init(address, i2c_device);
@@ -40,7 +40,7 @@ int main(int argc, char **argv){
 ```python
 import time
 from tentacle_pi.LM75 import LM75
-lm = LM75(0x48,"/dev/i2c-2")
+lm = LM75(0x48,"/dev/i2c-1")
 
 for x in range(0,10):
         temperature = lm.temperature()
