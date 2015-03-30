@@ -59,6 +59,7 @@ typedef struct {
  */
 
 int lm75_set_addr(void *_s);
+void lm75_init_error_cleanup(void *_s);
  
 
 /*
@@ -80,6 +81,25 @@ int lm75_set_addr(void *_s) {
 		DEBUG("error: ioctl() failed\n");
 
 	return error;
+}
+
+
+
+/*
+ * Frees allocated memory in the init function.
+ * 
+ * @param lm75 sensor
+ */
+void lm75_init_error_cleanup(void *_s) {
+	lm75_t* s = TO_S(_s);
+	
+	if(s->i2c_device != NULL) {
+		free(s->i2c_device);
+		s->i2c_device = NULL;
+	}
+	
+	free(s);
+	s = NULL;
 }
 
 
@@ -111,6 +131,7 @@ void *lm75_init(int address, const char* i2c_device_filepath) {
 	s->i2c_device = (char*) malloc(strlen(i2c_device_filepath) * sizeof(char));
 	if(s->i2c_device == NULL) {
 		DEBUG("error: malloc returns NULL pointer!\n");
+		lm75_init_error_cleanup(s);
 		return NULL;
 	}
 
@@ -121,11 +142,14 @@ void *lm75_init(int address, const char* i2c_device_filepath) {
 	int file;
 	if((file = open(s->i2c_device, O_RDWR)) < 0) {
 		DEBUG("error: %s open() failed\n", s->i2c_device);
+		lm75_init_error_cleanup(s);
 		return NULL;
 	}
 	s->file = file;
-	if(lm75_set_addr(s) < 0)
+	if(lm75_set_addr(s) < 0) {
+		lm75_init_error_cleanup(s);
 		return NULL;
+	}
 	
 	DEBUG("device: open ok\n");
 	return _s;
@@ -139,6 +163,10 @@ void *lm75_init(int address, const char* i2c_device_filepath) {
  * @param lm75 sensor
  */
 void lm75_close(void *_s) {
+	if(_s == NULL) {
+		return;
+	}
+	
 	DEBUG("close device\n");
 	lm75_t *s = TO_S(_s);
 	

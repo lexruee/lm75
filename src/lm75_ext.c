@@ -19,7 +19,6 @@ typedef struct {
 
 static void LM75_dealloc(LM75_Object *self) {
 	lm75_close(self->lm75);
-	self->lm75 = NULL;
 	self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -41,8 +40,13 @@ static int LM75_init(LM75_Object *self, PyObject *args, PyObject *kwds) {
 	if(!PyArg_ParseTupleAndKeywords(args, kwds, "is", kwlist, &address, &i2c_device))
 		return -1;
 		
-	if(i2c_device) 
+	if(i2c_device) {
 		self->lm75 = lm75_init(address, i2c_device);
+		if(self->lm75 == NULL) {
+			PyErr_SetString(PyExc_RuntimeError, "Cannot initialize sensor. Run program as root and check i2c device / address.");
+			return -1;
+		}
+	}
 
 	return 0;
 }
