@@ -1,11 +1,11 @@
 /*
  * @author 	Alexander Rüedlinger <a.rueedlinger@gmail.com>
  * @date 	13.03.2015
- * 
+ *
  * Python bindings for the lm75 driver written in C.
- * 
+ *
  */
- 
+
 #include <Python.h>
 #include <structmember.h>
 #include "lm75.h"
@@ -37,13 +37,17 @@ static int LM75_init(LM75_Object *self, PyObject *args, PyObject *kwds) {
 	int address;
 	const char *i2c_device;
 	static char *kwlist[] = {"address", "i2c_devcie", NULL};
-	
+
 	if(!PyArg_ParseTupleAndKeywords(args, kwds, "is", kwlist, &address, &i2c_device))
 		return -1;
-		
-	if(i2c_device) 
-		self->lm75 = lm75_init(address, i2c_device);
 
+	if(i2c_device) {
+		self->lm75 = lm75_init(address, i2c_device);
+		if(self->lm75 == NULL) {
+			PyErr_SetString(PyExc_RuntimeError, "Cannot initialize sensor. Run program as root and check i2c device / address.");
+			return -1;
+		}
+	}
 	return 0;
 }
 
@@ -123,15 +127,15 @@ static PyMethodDef module_methods[] = {
 
 PyMODINIT_FUNC initLM75(void) {
 	PyObject *m;
-	
+
 	if(PyType_Ready(&LM75_Type) < 0)
 		return;
-		
+
 	m = Py_InitModule3("LM75", module_methods, "LM75 extension module");
-	
+
 	if(m == NULL)
 		return;
-		
+
 	Py_INCREF(&LM75_Type);
 	PyModule_AddObject(m, "LM75", (PyObject *)&LM75_Type);
 }
