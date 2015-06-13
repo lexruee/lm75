@@ -63,7 +63,7 @@ static PyObject *LM75_temperature(LM75_Object *self) {
 
 
 static PyMethodDef LM75_methods[] = {
-	{"temperature", (PyCFunction) LM75_temperature, METH_NOARGS, "Return the temperature value"},
+	{"temperature", (PyCFunction) LM75_temperature, METH_NOARGS, "Returns a temperature value"},
 	{NULL}  /* Sentinel */
 };
 
