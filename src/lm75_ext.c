@@ -78,7 +78,7 @@ static PyMemberDef LM75_members[] = {
 static PyTypeObject LM75_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,                         /*ob_size*/
-	"LM75.LM75",             /*tp_name*/
+	"tentacle_pi.LM75",             /*tp_name*/
 	sizeof(LM75_Object),             /*tp_basicsize*/
 	0,                         /*tp_itemsize*/
 	(destructor)LM75_dealloc, /*tp_dealloc*/
